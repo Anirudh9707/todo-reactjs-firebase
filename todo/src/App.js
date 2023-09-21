@@ -1,16 +1,27 @@
 
 import './App.css';
 import { TextField,Button } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Todo } from './Components/Todo';
+import { Collections } from '@mui/icons-material';
+import { db } from './firebase';
 
 function App() {
-  const [todos,setTodos]=useState(["react","firebase"]);
+  const [todos,setTodos]=useState([]);
   const [input,setInput]=useState('');
+  useEffect(()=>{
+    onsnapshot(collection(db,'todos'),snapshot=>{
+      setTodos(snapshot.docs.map(doc=>doc.data()))
+    })
+  },[input]);
   const addTodos=(e)=>{
       e.preventDefault();
-      setTodos([...todos,input])
-      setInput('')
+      // setTodos([...todos,input])
+      addDoc(collection(db,todos),{
+        todo:input,
+        timestamp:serverTimestamp(),
+      })
+    setInput('')
   }
   
   return (
